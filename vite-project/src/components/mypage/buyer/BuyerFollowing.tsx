@@ -1,14 +1,7 @@
 import { Box, Heading, Text, Flex, Badge } from "@chakra-ui/layout";
 import { Avatar } from "@chakra-ui/react";
-// import { useQuery } from "@tanstack/react-query";
-// import axios from "axios";
 
 export default function Following() {
-
-    // let data = useQuery([current_products], ()=>
-    //     axios.get('링크')
-    //     .then((a)=> {return a.data})
-    // )
 
     return (
         <Box w="75%" bg="white" rounded="lg" overflow="hidden">
@@ -17,6 +10,7 @@ export default function Following() {
                     <Heading size="lg" fontWeight="bold" mb={4}>
                     팔로잉 목록
                     </Heading>
+
                     {Array.from({ length: 3 }).map((_, index) => (
                     <Box key={index} w="full" borderBottom="1px" pb={4} mb={4} >
                         <Avatar mt="4" size="xl" src="https://raw.githubusercontent.com/printilikepenguin/forUserContent/master/profile.png" />
@@ -28,6 +22,7 @@ export default function Following() {
                         </Box>
                     </Box>
                     ))}
+                    
                     <Flex>
                         <Avatar src='https://bit.ly/sage-adebayo' />
                         <Box ml='3'>
@@ -40,6 +35,7 @@ export default function Following() {
                             <Text fontSize='sm'>UI Engineer</Text>
                         </Box>
                     </Flex>
+                    
                 </Box>
             </Box>
         </Box>
