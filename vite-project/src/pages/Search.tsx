@@ -15,6 +15,7 @@ export default function Search() {
             event.preventDefault();
             // 강제접근할 경우 (!)    
             const enteredText = TextInputRef.current?.value;
+            console.log(enteredText)
             setSearchKeyword(enteredText || '')
         };
         return (

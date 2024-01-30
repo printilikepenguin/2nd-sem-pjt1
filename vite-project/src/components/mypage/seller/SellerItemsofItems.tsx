@@ -52,14 +52,9 @@ function ItemsofItems() {
                 </Box>
             </Flex>
 
-            <Box>
-                <Button>
-                    수정
-                </Button>
-                <Button>
-                    상세페이지 확인
-                </Button>
-            </Box>
+            <Button>
+                데이터확인!
+            </Button>
         </Flex>
     )
 }

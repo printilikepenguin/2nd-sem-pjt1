@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Input,
@@ -10,8 +10,15 @@ import {
     Select,
     FormLabel,
     Text,
+    Alert,
+    AlertIcon,
+    AlertTitle,
 } from "@chakra-ui/react";
 import { ViewIcon, CheckIcon } from "@chakra-ui/icons";
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { SignupUserAPI } from "../../api/user";
 
 function SignUpForm() {
     const [username, setUsername] = useState("");
@@ -22,6 +29,15 @@ function SignUpForm() {
     const [nickname, setNickname] = useState("");
     const [sex, setSex] = useState("");
     const [birthday, setBirthday] = useState("");
+
+    console.log(username)
+    console.log(password)
+    console.log(passwordAgain)
+    console.log(email)
+    console.log(nickname)
+    console.log(sex)
+    console.log(birthday)
+
     const isUsernameValid = false;
     const isPasswordValid = false;
     const isEmailValid = false;
@@ -29,16 +45,43 @@ function SignUpForm() {
     const isSexValid = false;
     const isBirthdayValid = false;
 
-    const navigate = useNavigate();
+    const formSchema = yup.object({
+        email: yup
+            .string()
+            .required('이메일을 입력해주세요')
+            .email('이메일 형식이 아닙니다ㅠㅠ!'),
+        password: yup
+            .string()
+            .required('영문, 숫자포함 8자리를 입력해주세요')
+            .min(8, '최소 8자 이상 가능합니다')
+            .max(15, '최대 15자 까지만 가능합니다')
+            .matches(
+              /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/,
+              '영문 숫자포함 8자리를 입력해주세요.'
+            ),
+        passwordConfirm: yup
+            .string()
+            .oneOf([yup.ref('password')], '비밀번호가 다릅니다.'),
+    });
+    
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+      } = useForm({
+        mode: 'onChange',
+        resolver: yupResolver(formSchema),
+      });
+    
+    const onSubmit = (data) => console.log(data);
 
-    async function usernameDuplicateCheck(): Promise<void> {}
-
-    function onSubmit(event: React.SyntheticEvent): void {
-        event.preventDefault();
-        // TODO: 회원가입 비동기 통신
-
-        navigate("/v1/sign");
-    }
+    // function onSubmit(event: React.SyntheticEvent): void {
+    //     event.preventDefault();
+    //     // TODO: 회원가입 비동기 통신
+    //     SignupUserAPI 
+    //     console.log('온서브밋')
+    // }
 
     return (
         <>
@@ -58,6 +101,7 @@ function SignUpForm() {
                             autoComplete="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            // onChange={handleUsername}
                         />
                         <InputRightElement width="4.5rem" pr={"1"}>
                             <Button
@@ -65,8 +109,7 @@ function SignUpForm() {
                                 size="sm"
                                 colorScheme="themeGreen"
                                 variant="ghost"
-                                // color="themeGreen.500"
-                                onClick={usernameDuplicateCheck}
+                                // onClick={usernameDuplicateCheck}
                                 borderRadius="md"
                                 _hover={{
                                     bg: "themeGreen.500",
@@ -79,6 +122,7 @@ function SignUpForm() {
                     </InputGroup>
                     <FormErrorMessage>아이디를 확인해 주세요</FormErrorMessage>
                 </FormControl>
+                
                 <FormControl my={2} isInvalid={isPasswordValid} isRequired>
                     <FormLabel>
                         <Text as={"b"}>비밀번호</Text>
@@ -116,6 +160,7 @@ function SignUpForm() {
                         비밀번호를 확인해 주세요
                     </FormErrorMessage>
                 </FormControl>
+
                 <FormControl my={2} isInvalid={isEmailValid} isRequired>
                     <FormLabel>
                         <Text as={"b"}>이메일</Text>
@@ -127,6 +172,7 @@ function SignUpForm() {
                             size="md"
                             autoComplete="email"
                             value={email}
+                            {...register('email')}
                             onChange={(e) => setEmail(e.target.value)}
                         ></Input>
                         <InputRightElement pr={"1"} w="3.25rem">
@@ -141,12 +187,13 @@ function SignUpForm() {
                                 _hover={{
                                     bg: "themeGreen.500",
                                     color: "white",
-                                }}
+                                }}  
                             >
                                 재전송
                             </Button>
                         </InputRightElement>
                     </InputGroup>
+                    {errors.email && <p>{errors.email.message}</p>}
                     <InputGroup size="md">
                         <Input
                             focusBorderColor="themeGreen.500"
