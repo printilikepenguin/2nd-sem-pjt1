@@ -42,6 +42,42 @@ export type RegisterUser = {
     password: string;
     email: string;
     nickname: string;
-    sex: true | false;
+    sex: string;
     birthday: string;
+};
+
+export type RegisterSeller = {
+    businessNumber: string;
+    businessContent: string;
+    mailOrderSalesNumber: string;
+    businessAddress: string;
+    phoneNumber: string;
+};
+
+export interface ItemQnA {
+    productQuestionBoardId: number;
+    writerId: number;
+    writerNickname: string;
+    productId: number;
+    questionContent: string;
+    answerContent: string | null;
+    questionRegisterDate: string;
+    answerRegisterDate: string | null;
+    answer: number;
+    isMine: number;
+}
+
+export interface ItemDetailInterface {
+    productId: number;
+    imgSrc: string;
+    sellerId: number;
+    categoryId: number;
+    categoryName: null;
+    productName: string;
+    productContent: string;
+    paymentLink: string;
+    price: number;
+    deliveryCharge: number;
+    quantity: number;
+    registerDate: string
 }

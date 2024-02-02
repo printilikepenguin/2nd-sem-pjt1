@@ -1,4 +1,4 @@
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 import {
     AccordionButton,
     AccordionItem,
@@ -6,24 +6,79 @@ import {
     Text,
     AccordionPanel,
     AccordionIcon,
-    Tag,
 } from "@chakra-ui/react";
+import { ItemQnA } from "../../../types/DataTypes";
+import QnaDeleteAlertDialog from "./QnaDeleteAlertDialog";
+import { deleteItemQnA } from "../../../api/itemQnA";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/stores/store";
 
-function QnaAccordion() {
+function QnaAccordion({
+    data,
+    refreshQnA,
+}: {
+    data: ItemQnA;
+    refreshQnA: () => void;
+}) {
+    console.log("QnaAccordion");
+    const [alertOpen, setAlertOpen] = useState(false);
+    const accessToken = useSelector(
+        (state: RootState) => state.user.accessToken
+    );
+    const questionDate = data.questionRegisterDate
+        ? data.questionRegisterDate.split("T")[0].replaceAll("-", ".")
+        : "";
+    const answerDate = data.answerRegisterDate
+        ? data.answerRegisterDate.split("T")[0].replaceAll("-", ".")
+        : "";
+    const questionTitle =
+        data.questionContent.length > 35
+            ? data.questionContent.slice(0, 35) + "..."
+            : data.questionContent;
+    const handleClick = () => {
+        setAlertOpen(!alertOpen);
+    };
+    const handleDelete = () => {
+        deleteItemQnA(data.productQuestionBoardId, accessToken)
+            .then(() => {
+                refreshQnA();
+                handleClick();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
     return (
         <>
+            <QnaDeleteAlertDialog
+                isOpen={alertOpen}
+                handleCancel={handleClick}
+                handleDelete={handleDelete}
+            />
             <AccordionItem py={2}>
                 <AccordionButton py={6}>
-                    <Text
-                        mr={3}
-                        color={"grey"}
-                        fontSize={"sm"}
-                        fontWeight={"bold"}
-                        letterSpacing={".1em"}
-                    >
-                        미답변
-                    </Text>
-
+                    {data.answer === 0 ? (
+                        <Text
+                            mr={3}
+                            color={"grey"}
+                            fontSize={"sm"}
+                            fontWeight={"bold"}
+                            letterSpacing={".1em"}
+                        >
+                            미답변
+                        </Text>
+                    ) : (
+                        <Text
+                            mr={3}
+                            color={"themeGreen.500"}
+                            fontSize={"sm"}
+                            fontWeight={"bold"}
+                            letterSpacing={".1em"}
+                        >
+                            답변완료
+                        </Text>
+                    )}
                     <Box
                         as="span"
                         flex="1"
@@ -35,9 +90,14 @@ function QnaAccordion() {
                         letterSpacing={".1em"}
                     >
                         <Box as="span" pr={"2"}>
-                            현종 아조씨의 고구마는 정품인가요?
+                            {questionTitle}
                         </Box>
-                        <DeleteIcon color={"lightgrey"} />
+                        {data.isMine === 0 ? (
+                            <DeleteIcon
+                                color={"lightgrey"}
+                                onClick={handleClick}
+                            />
+                        ) : null}
                     </Box>
                     <Text
                         pr={"2"}
@@ -46,7 +106,7 @@ function QnaAccordion() {
                         fontWeight={"bold"}
                         letterSpacing={".1em"}
                     >
-                        2024.01.24
+                        {questionDate}
                     </Text>
                     <AccordionIcon />
                 </AccordionButton>
@@ -55,7 +115,6 @@ function QnaAccordion() {
                     borderTop={"1px"}
                     borderBottom={"1px"}
                     borderColor={"themeLightGreen.500"}
-                    // backgroundColor={"#f7f8fa"}
                 >
                     <Text
                         fontWeight={"bold"}
@@ -70,52 +129,43 @@ function QnaAccordion() {
                         lineHeight={"200%"}
                         letterSpacing={".1em"}
                     >
-                        질문 내용 질문 내용 상품에 대한 질문을 하고 있습니다.
-                        저는 이 상품이 매우 궁금하며, 앞으로 알아볼 열의를 갖고
-                        있습니다. 과연 이 상품은 무엇일까요?? 그건 앞으로
-                        알아가야 할 일이라고 생각합니다.
+                        {data.questionContent}
                     </Text>
                 </AccordionPanel>
-                <AccordionPanel py={7}>
-                    <Box>
-                        <Text
-                            fontWeight={"bold"}
-                            fontSize={"xl"}
-                            color={"themeRed.500"}
-                        >
-                            A
-                        </Text>
-                        <Text
-                            fontSize={"sm"}
-                            lineHeight={"200%"}
-                            letterSpacing={".1em"}
-                        >
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit, sed do eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis
-                            nostrud exercitation ullamco laboris nisi ut aliquip
-                            ex ea commodo consequat. 답변 답변 답변 답변 답변
-                            답변 답변 답변 답변 답변 답변 답변 답변 답변 답변
-                            답변 답변 답변 답변 답변 답변 답변 답변 답변 답변
-                            답변 답변 답변 답변 답변 답변 답변 답변 답변 답변
-                            답변 답변 답변 답변 답변 답변
-                        </Text>
-                    </Box>
-                    <Box textAlign={"right"}>
-                        <EditIcon />
-                        <Box
-                            as="span"
-                            px={"3"}
-                            color={"grey"}
-                            fontSize={"xs"}
-                            fontWeight={"bold"}
-                            textAlign={"right"}
-                            letterSpacing={".1em"}
-                        >
-                            2024.01.24
+                {data.answer === 0 ? (
+                    <AccordionPanel py={7}>
+                        <Box>
+                            <Text
+                                fontWeight={"bold"}
+                                fontSize={"xl"}
+                                color={"themeRed.500"}
+                            >
+                                A
+                            </Text>
+                            <Text
+                                fontSize={"sm"}
+                                lineHeight={"200%"}
+                                letterSpacing={".1em"}
+                            >
+                                {data.answerContent || null}
+                            </Text>
                         </Box>
-                    </Box>
-                </AccordionPanel>
+                        <Box textAlign={"right"}>
+                            {/* <EditIcon /> */}
+                            <Box
+                                as="span"
+                                px={"3"}
+                                color={"grey"}
+                                fontSize={"xs"}
+                                fontWeight={"bold"}
+                                textAlign={"right"}
+                                letterSpacing={".1em"}
+                            >
+                                {answerDate}
+                            </Box>
+                        </Box>
+                    </AccordionPanel>
+                ) : null}
             </AccordionItem>
         </>
     );

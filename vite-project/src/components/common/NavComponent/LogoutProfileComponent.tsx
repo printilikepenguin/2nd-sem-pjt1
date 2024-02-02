@@ -1,4 +1,4 @@
-import { BellIcon, Search2Icon } from "@chakra-ui/icons";
+import { Search2Icon } from "@chakra-ui/icons";
 import { Box, Flex, Link } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,9 +15,6 @@ export default function LogoutProfileComponent() {
                         color={"#126F54"}
                         boxSize={6}
                     />
-                </Link>
-                <Link>
-                    <BellIcon color={"#126F54"} boxSize={6} />
                 </Link>
             </Flex>
         </Box>

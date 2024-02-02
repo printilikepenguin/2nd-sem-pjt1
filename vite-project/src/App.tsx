@@ -18,6 +18,7 @@ import FindAccountPage from "./pages/FindAccountPage";
 import MainPage from "./pages/MainPage";
 import LiveAddForm from "./pages/LiveAddForm";
 import BuyerLive from "./pages/BuyerLive";
+import ItemAdd from "./pages/ItemAdd";
 
 function App() {
     return (
@@ -31,8 +32,8 @@ function App() {
                         <Route path="live/list" element={<LiveList />} />
                         <Route path="items/list" element={<ItemList />} />
                         <Route path="calendar" element={<Calendar />} />
-                        <Route path="buyer/:userId" element={<BuyerPage />} />
-                        <Route path="seller/:userId" element={<SellerPage />} />
+                        <Route path="buyer" element={<BuyerPage />} />
+                        <Route path="seller" element={<SellerPage />} />
                         <Route path="userinfo" element={<UserinfoPage />} />
                         <Route path="login" element={<LoginPage />} />
                         <Route
@@ -55,9 +56,16 @@ function App() {
                             path="findaccount"
                             element={<FindAccountPage type="result" />}
                         />
+                        <Route path="ItemAdd" element={<ItemAdd />}></Route>
                     </Route>
-                    <Route path="broadcast" element={<Broadcast />} />
-                    <Route path="v1/live/:roomId" element={<BuyerLive />}></Route>
+                    <Route
+                        path="v1/broadcast/:roomId"
+                        element={<Broadcast />}
+                    />
+                    <Route
+                        path="v1/live/:roomId"
+                        element={<BuyerLive />}
+                    ></Route>
                 </Routes>
             </ChakraProvider>
         </>

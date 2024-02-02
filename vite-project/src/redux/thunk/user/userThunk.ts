@@ -1,13 +1,22 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 // import { UserState } from "../../actions/types";
-import { loginUser } from "../../../api/user";
+import { loginUser, logoutAPI } from "../../../api/user";
 import { AxiosResponse } from "axios";
 
 const loginUserThunk = createAsyncThunk(
     "user/login",
-    async (idpw: { id: string; password: string }, thunkAPI) => {
+    async (idpw: { loginId: string; password: string }, thunkAPI) => {
         console.log("loginUserThunk idpw: " + JSON.stringify(idpw));
         const response: AxiosResponse = await loginUser(idpw);
+        return response.data;
+    }
+);
+
+const logoutUserThunk = createAsyncThunk(
+    "user/logout",
+    async (accessToken: string, thunkAPI) => {
+        console.log("logoutUserThunk: " + JSON.stringify(accessToken));
+        const response: AxiosResponse = await logoutAPI(accessToken);
         return response.data;
     }
 );
@@ -16,4 +25,4 @@ const testUserThunk = createAsyncThunk("user/test", async () => {
     return "test";
 });
 
-export { loginUserThunk, testUserThunk };
+export { loginUserThunk, logoutUserThunk, testUserThunk };

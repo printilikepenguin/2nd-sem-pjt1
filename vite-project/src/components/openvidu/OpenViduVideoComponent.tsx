@@ -1,5 +1,5 @@
 import { StreamManager } from "openvidu-browser";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function OpenViduVideoComponent({
     streamManager,
@@ -7,13 +7,24 @@ function OpenViduVideoComponent({
     streamManager: StreamManager;
 }) {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [mute, setMute] = useState<boolean>(true);
     useEffect(() => {
         if (streamManager && videoRef.current) {
             streamManager.addVideoElement(videoRef.current);
         }
     }, [streamManager]);
-
-    return <video autoPlay={true} ref={videoRef} style={{width:'100%' }}></video>;
+    function handleClick() {
+        setMute(false);
+    }
+    return (
+        <video
+            autoPlay={true}
+            muted={mute}
+            ref={videoRef}
+            onClick={handleClick}
+            style={{ objectFit: "cover" }}
+        ></video>
+    );
 }
 
 export default OpenViduVideoComponent;
