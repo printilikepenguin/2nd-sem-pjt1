@@ -1,14 +1,11 @@
 export type userInfo = {
-    userId: number;
-    loginId: string;
-    pw?: string;
-    token: string;
+    profileImgFile: File | null;
+    profileImg: string | null;
+    password: string | null;
+    newPassword: string | null;
     nickname: string;
-    sex: boolean;
+    sex: string;
     birthday: string;
-    profileImg: string;
-    auth: string;
-    joinData: string;
 };
 
 export type goodsField = {
@@ -21,14 +18,6 @@ export type goodsField = {
     quantity: number | string;
     images: string;
 };
-
-// export type solvedData = {
-//     solved: Boolean;
-//     probNo: number;
-//     userInfo?: userSolvedData;
-//     time_sort_list?: userSolvedData[];
-//     memory_sort_list?: userSolvedData[];
-//   };
 
 export type UserState = {
     profileImg: string;
@@ -72,12 +61,110 @@ export interface ItemDetailInterface {
     imgSrc: string;
     sellerId: number;
     categoryId: number;
-    categoryName: null;
+    categoryName: string;
     productName: string;
     productContent: string;
     paymentLink: string;
     price: number;
     deliveryCharge: number;
     quantity: number;
-    registerDate: string
+    registerDate: string;
+}
+
+export interface AddItemInterface {
+    categoryId: number;
+    productName: string;
+    productContent: string;
+    paymentLink: string;
+    price: number;
+    deliveryCharge: number;
+    quantity: number;
+}
+
+export interface ItemInfo {
+    categoryId: number;
+    productName: string;
+    productContent: string;
+    paymentLink: string;
+    price: number;
+    deliveryCharge: number;
+    quantity: number;
+    imgSrc: string;
+}
+
+export type broadcastInfo = {
+    accessToken: string;
+    broadcastTitle: string;
+    content: string;
+    script: string;
+    ttsSetting: boolean;
+    chatbotSetting: boolean;
+    broadcastStartDate: string;
+};
+
+export type followerItem = {
+    id: number;
+    loginId: string;
+    nickname: string;
+    profileImg: string;
+    userId: number;
+}
+
+export type UploadImage =  {
+    file: File
+    type: string
+}
+
+export type SellerInfo = {
+    auth: string;
+    bitrhday: string;
+    followerCount: number;
+    joinDate: string;
+    loginId: string;
+    nickname: string;
+    profileImg: string;
+    sellerInfoId: number;
+    sex: string;
+    userId: number;
+}
+
+export type MyQna = {
+    answer: number;
+    answerContent: string;
+    answerRegisterDate: string;
+    productContent: string;
+    productId: number;
+    productName: string;
+    productQuestionBoardId: number;
+    questionContent: string;
+    questionRegisterDate: string;
+    writerId: number;
+    writerNickname: string
+}
+
+export interface liveProductPrice {
+    productId: number;
+    originalPrice: number;
+    price: number;
+    discount: number;
+}
+
+export interface liveProduct {
+    productId: number;
+    liveId: number;
+    liveFlatPrice: number;
+    liveRatePrice: number;
+    livePriceStartDate: string;
+    livePriceEndDate: string;
+    mainProductSetting: boolean;
+    seq: number;
+}
+
+export interface AcceptSeller {
+    approvalStatus: boolean;
+    loginId: string;
+    nickname: string;
+    profileImg: string;
+    sellerInfoId: number;
+    userId: number;
 }

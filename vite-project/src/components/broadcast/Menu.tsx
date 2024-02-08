@@ -5,8 +5,13 @@ import {
     Tabs,
     TabList,
     Tab,
-    TabPanels,
-    TabPanel,
+    Flex,
+    Spacer,
+    AccordionItem,
+    AccordionIcon,
+    AccordionPanel,
+    AccordionButton,
+    Accordion,
 } from "@chakra-ui/react";
 
 import LiveInfo from "./menu/LiveInfo";
@@ -15,81 +20,88 @@ import NewProduct from "./menu/NewProduct";
 import ProductList from "./menu/ProductList";
 import Prompter from "./menu/Prompter";
 import Statistic from "./menu/Statistic";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-const data = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [
-      {
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+import { useState } from "react";
 
 function Menu() {
+    const [activeTab, SetTab] = useState('Feedback')
+
+    const StateChangeFeedback = () => {
+        SetTab('Feedback')
+    }
+
+    const StateChangeStatistic = () => {
+        SetTab('Statistic')
+    }
+
+    const StateChangeProductList = () => {
+        SetTab('ProductList')
+    }
+
+    const StateChangeNewProduct = () => {
+        SetTab('NewProduct')
+    }
+
+    const StateChangeLiveInfo = () => {
+        SetTab('LiveInfo')
+    }
+
+    const StateChangePrompter = () => {
+        SetTab('Prompter')
+    }
+
     return (
+        <Box w={"33%"} borderLeft="1px" overflow="auto" p={6}>
+            <Accordion allowToggle mb={"2rem"}>
+                <AccordionItem>
+                    <AccordionButton>
+                        <Box as="span" flex="1" textAlign="left">
+                            <Text as={"b"}>메뉴 목록 보기</Text>
+                        </Box>
+                        <AccordionIcon />
+                    </AccordionButton>
 
-        <Box w="80" borderLeft="1px" overflow="auto" p={6}>
-            <Text fontSize="2xl" fontWeight="bold" mb={4}>
-                메뉴
-            </Text>
-
-            <Tabs variant="soft-rounded" colorScheme="green">
-                <TabList>
-                    <Tab>피드백</Tab>
-                    <Tab>통계</Tab>
-                    <Tab>상품목록</Tab>
-
-                </TabList>
-                <TabList>
-
-                    <Tab>새상품등록하기</Tab>
-                    <Tab>방송정보수정</Tab>
-                    <Tab>대본보기</Tab>
-                </TabList>
-                <TabPanels>
-                    <TabPanel>
-                        <Feedback />
-                    </TabPanel>
-                    <TabPanel>
-                        <Statistic />
-                    </TabPanel>
-                    <TabPanel>
-                        <ProductList />
-                    </TabPanel>
-                    <TabPanel>
-                        <NewProduct />
-                    </TabPanel>
-                    <TabPanel>
-                        <LiveInfo />
-                    </TabPanel>
-                    <TabPanel>
-                        <Prompter />
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-            <Doughnut data={data} />
+                    <AccordionPanel pb={4}>
+                        <Tabs variant="soft-rounded" colorScheme="green">
+                            <TabList>
+                                <Flex w={"100%"}>
+                                    <Tab
+                                        onClick={
+                                            StateChangeFeedback
+                                        }
+                                    >
+                                        실시간 피드백
+                                    </Tab>
+                                    <Spacer />
+                                    <Tab
+                                        onClick={
+                                            StateChangeStatistic
+                                        }
+                                    >
+                                        실시간 통계
+                                    </Tab>
+                                    <Spacer />
+                                <Tab onClick={StateChangeProductList}>상품 목록</Tab>
+                                </Flex>
+                            </TabList>
+                            <TabList mt={"0.7rem"}>
+                                <Flex w={"100%"}>
+                                    <Tab onClick={StateChangeNewProduct}>새상품 등록하기</Tab>
+                                    <Spacer />
+                                    <Tab onClick={StateChangeLiveInfo}>방송 정보 수정</Tab>
+                                    <Spacer />
+                                    <Tab onClick={StateChangePrompter}>대본 보기</Tab>
+                                </Flex>
+                            </TabList>
+                        </Tabs>
+                    </AccordionPanel>
+                </AccordionItem>
+            </Accordion>
+            {activeTab === 'Feedback' ? <Feedback /> : null}
+            {activeTab === 'Statistic' ? <Statistic /> : null}
+            {activeTab === 'ProductList' ? <ProductList /> : null}
+            {activeTab === 'NewProduct' ? <NewProduct /> : null}
+            {activeTab === 'LiveInfo' ? <LiveInfo /> : null}
+            {activeTab === 'Prompter' ? <Prompter /> : null}
         </Box>
     );
 }

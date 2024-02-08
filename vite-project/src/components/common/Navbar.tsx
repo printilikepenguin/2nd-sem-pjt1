@@ -11,30 +11,24 @@ import BuyerComponent from "./NavComponent/BuyerComponent";
 import ProfileBuyerComponent from "./NavComponent/NavBuyerProfileComponent";
 import ProfileSellerComponent from "./NavComponent/NavSellerProfileComponent";
 import LogoutProfileComponent from "./NavComponent/LogoutProfileComponent";
+import ProfileAdminComponent from "./NavComponent/NavAdminProfileComponent";
 
 function NavBar() {
     const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.user);
     const [myAuth, setMyAuth] = useState("")
-    const [isLogin, setIsLogin] = useState(false);
     const profileImg = user.profileImg
 
     useEffect(() => {
         setMyAuth(user.auth)
-        if (user.auth === "BUYER" || user.auth === "SELLER" || user.auth === "ADMIN") {
-            setIsLogin(true)
-        }
-    }, []);
-
-    console.log(myAuth)
-    console.log(isLogin)
+        }, [user.accessToken]);
 
     return (
         <Box className="paddingNavBar">
             <Flex minWidth={"max-content"} alignItems="center" gap="2">
                 <Box />
                 <Spacer />
-                {isLogin ? <LoginComponent /> : <LogoutComponent />}
+                {user.accessToken ? <LoginComponent /> : <LogoutComponent />}
             </Flex>
             <Flex minWidth="max-content" alignItems="center" gap="3">
                 <Box
@@ -58,10 +52,12 @@ function NavBar() {
 
                 <Spacer />
 
-                {isLogin && myAuth === "BUYER" ? (
+                {user.accessToken && myAuth === "BUYER" ? (
                     <ProfileBuyerComponent />
-                ) : isLogin && myAuth === "SELLER" ? (
+                ) : user.accessToken && myAuth === "SELLER" ? (
                     <ProfileSellerComponent />
+                ) : user.accessToken && myAuth === "ADMIN" ? (
+                    <ProfileAdminComponent />
                 ) : (
                     <LogoutProfileComponent />
                 )}
