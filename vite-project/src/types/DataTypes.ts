@@ -20,6 +20,8 @@ export type goodsField = {
 };
 
 export type UserState = {
+    userId: number;
+    nickname: string;
     profileImg: string;
     auth: "BUYER" | "SELLER" | "ADMIN" | "FAIL" | "INIT";
     accessToken: string;
@@ -81,6 +83,17 @@ export interface AddItemInterface {
     quantity: number;
 }
 
+export interface PutItemInterface {
+    categoryId: number;
+    productName: string;
+    productContent: string;
+    paymentLink: string;
+    price: number;
+    deliveryCharge: number;
+    quantity: number;
+    productId: number | undefined;
+}
+
 export interface ItemInfo {
     categoryId: number;
     productName: string;
@@ -108,9 +121,9 @@ export type followerItem = {
     nickname: string;
     profileImg: string;
     userId: number;
-}
+};
 
-export type UploadImage =  {
+export type UploadImage = {
     file: File
     type: string
 }
@@ -126,7 +139,7 @@ export type SellerInfo = {
     sellerInfoId: number;
     sex: string;
     userId: number;
-}
+};
 
 export type MyQna = {
     answer: number;
@@ -140,6 +153,18 @@ export type MyQna = {
     questionRegisterDate: string;
     writerId: number;
     writerNickname: string
+}
+
+export type AdminUserInfo = {
+    id: number;
+    auth: string;
+    loginId: string;
+    email: string;
+    nickname: string;
+    sex: string;
+    birthday: string;
+    profileImg: string;
+    joinDate: string;
 }
 
 export interface liveProductPrice {
@@ -167,4 +192,13 @@ export interface AcceptSeller {
     profileImg: string;
     sellerInfoId: number;
     userId: number;
+}
+    
+export interface UserProfileEdit {
+    profileImg: string | null | undefined;
+    password: string;
+    newPassword: string;
+    nickname: string;
+    sex: string;
+    birthday: string
 }
