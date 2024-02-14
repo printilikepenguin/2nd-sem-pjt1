@@ -22,10 +22,11 @@ import {
     editbroadcastInfo,
     liveProduct,
     liveProductPrice,
-    LiveProductAll
+    LiveProductAll,
 } from "../../../types/DataTypes";
 import { editLivePlanAPI, getLiveDetailAPI } from "../../../api/openVidu";
 import { postLiveProduct, getLiveProduct } from "../../../api/liveProduct";
+import { ItemListFetch } from "../../../api/Itemlist";
 
 interface broadcastDetailInfo {
     broadcastTitle: string;
@@ -38,12 +39,12 @@ interface broadcastDetailInfo {
 }
 
 export default function LivePlanEditForm() {
-    
     const { broadcastId } = useParams<{ broadcastId: string }>();
     const broadcastIdNumber = Number(broadcastId);
-    const accessToken = useSelector((state: RootState) => state.user.accessToken);
+    const user = useSelector((state: RootState) => state.user);
+    const accessToken = user.accessToken;
     const navigate = useNavigate();
-    
+
     const [title, setTitle] = useState("");
     const [memo, setMemo] = useState("");
     const [ttsSetting, setTtsSetting] = useState(false);
@@ -51,14 +52,21 @@ export default function LivePlanEditForm() {
     const [startDate, setStartDate] = useState("");
     const [priceEndDate, setPriceEndDate] = useState("");
     const [isSelected, setSelected] = useState(false);
-    const [selectedProductId, setSelectedProductId] = useState<Map<number, liveProductPrice>>(new Map());
+    const [selectedProductId, setSelectedProductId] = useState<
+        Map<number, liveProductPrice>
+    >(new Map());
     const [products, setProducts] = useState<Array<ItemDetailInterface>>([]);
     const [mainProductId, setMainProductId] = useState<number>(0);
     const [isOpen, setIsOpen] = useState(false);
-    const [planDetail, setPlanDetail] = useState<broadcastDetailInfo | null>(null);
+    const [planDetail, setPlanDetail] = useState<broadcastDetailInfo | null>(
+        null
+    );
     const [page, setPage] = useState<number>(0);
     const size = 5;
-    const [ liveproducts, setLiveproducts ] = useState<LiveProductAll[]>([])
+    const [liveproducts, setLiveproducts] = useState<LiveProductAll[]>([]);
+    const [currentGetProducts, setCurrentGetProducts] = useState<
+        LiveProductAll[]
+    >([]);
 
     const onSetSelected = (x: boolean): void => {
         setSelected(x);
@@ -68,25 +76,30 @@ export default function LivePlanEditForm() {
         if (!utcString) {
             return null;
         }
-        const [datePart, timePart] = utcString.split('T');
-        const [hour, minute, second] = timePart.split(':');
+        const [datePart, timePart] = utcString.split("T");
+        const [hour, minute, second] = timePart.split(":");
         const newHour = (parseInt(hour) + 9) % 24;
-        const newTimePart = `${newHour.toString().padStart(2, '0')}:${minute}`;
+        const newTimePart = `${newHour.toString().padStart(2, "0")}:${minute}`;
         const newUTCString = `${datePart}T${newTimePart}`;
-        return newUTCString.split('.')[0];
+        return newUTCString.split(".")[0];
     }
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getLiveDetailAPI({ broadcastId: broadcastIdNumber }, accessToken);
-                console.log(response)
+                const response = await getLiveDetailAPI(
+                    { broadcastId: broadcastIdNumber },
+                    accessToken
+                );
+                console.log(response);
                 setPlanDetail(response);
                 setTitle(response?.broadcastTitle || "");
                 setMemo(response?.script || "");
                 setTtsSetting(response?.ttsSetting || false);
                 setFaqSetting(response?.chatbotSetting || false);
-                const koreanStartDate = addHoursToUTC(response?.broadcastStartDate || "");
+                const koreanStartDate = addHoursToUTC(
+                    response?.broadcastStartDate || ""
+                );
                 if (koreanStartDate !== null) {
                     setStartDate(koreanStartDate);
                 }
@@ -97,22 +110,31 @@ export default function LivePlanEditForm() {
         };
         fetchData();
     }, [accessToken, broadcastIdNumber]);
-console.log(broadcastIdNumber)
+    console.log(broadcastIdNumber);
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getLiveProduct({ "live-id": broadcastIdNumber }, accessToken)
-            setLiveproducts(response.list)
+            const response = await getLiveProduct(
+                { "live-id": broadcastIdNumber },
+                accessToken
+            );
+            setLiveproducts(response.list);
         };
+
+        const productData = async () => {
+            const response = await ItemListFetch({ sellerId: user.userId });
+            setCurrentGetProducts(response.list);
+        };
+        productData();
         fetchData();
-    }, [])
-    console.log(liveproducts)
+    }, []);
+    console.log(liveproducts);
 
     useEffect(() => {
         if (liveproducts.length > 0) {
             setSelected(true);
         }
-    }, [liveproducts])
+    }, [liveproducts]);
 
     async function onSubmit(event: React.SyntheticEvent): Promise<void> {
         event.preventDefault();
@@ -126,7 +148,7 @@ console.log(broadcastIdNumber)
             alert("할인 종료 시간을 설정해주세요");
             return;
         }
-        
+
         const liveEditData: editbroadcastInfo = {
             broadcastId: broadcastIdNumber,
             accessToken,
@@ -138,8 +160,8 @@ console.log(broadcastIdNumber)
             broadcastStartDate: start_date.toISOString(),
         };
 
-        console.log(liveEditData)
-        
+        console.log(liveEditData);
+
         const liveProductArray = filterLiveProduct(
             0,
             start_date.toISOString().split("T")[0],
@@ -150,7 +172,7 @@ console.log(broadcastIdNumber)
             throw error;
         });
 
-        editLivePlanAPI({editbroadcastInfo: liveEditData}, accessToken)
+        editLivePlanAPI({ editbroadcastInfo: liveEditData }, accessToken);
         navigate("/v1/seller");
     }
 
@@ -223,7 +245,9 @@ console.log(broadcastIdNumber)
                         <FormControl isRequired>
                             <Input
                                 mt={"1rem"}
-                                placeholder={planDetail?.broadcastStartDate || ""}
+                                placeholder={
+                                    planDetail?.broadcastStartDate || ""
+                                }
                                 size="md"
                                 type="datetime-local"
                                 value={startDate || ""}
@@ -261,6 +285,7 @@ console.log(broadcastIdNumber)
                                         setMainProductId={setMainProductId}
                                         setIsOpen={setIsOpen}
                                         liveproducts={liveproducts}
+                                        currentGetProducts={currentGetProducts}
                                     />
                                 </Box>
                             ) : (
@@ -276,8 +301,7 @@ console.log(broadcastIdNumber)
                                     </Button>
                                 </Center>
                             )}
-
-                            <LiveItemAdd
+                            {/* <LiveItemAdd
                                 isSelected={isSelected}
                                 isSelectedState={onSetSelected}
                                 products={products}
@@ -289,10 +313,10 @@ console.log(broadcastIdNumber)
                                 size={size}
                                 isOpen={isOpen}
                                 setIsOpen={setIsOpen}
-                            />
+                                currentGetProducts={currentGetProducts}
+                            /> */}
                         </Box>
                     </Box>
-
                     <Box p={"2rem"}>
                         <Text fontSize={"xl"} as={"b"}>
                             라이브 할인이 끝나는 시간을 설정해주세요
