@@ -1,21 +1,40 @@
-import { AspectRatio, Avatar, Box, Center, Flex, Image } from "@chakra-ui/react";
+import {
+    AspectRatio,
+    Avatar,
+    Box,
+    Center,
+    Flex,
+    Image,
+    Tooltip,
+} from "@chakra-ui/react";
 import "../../css/ItemListComponentcss.css";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import React from "react";
+import { formatNumberWithComma } from "../common/Comma";
 
 interface GoodsProps {
     id: number | undefined;
     img: string | undefined;
     title: string | undefined;
     price: number | undefined;
+    profile: string | null | undefined;
+    sellerId: number | undefined;
 }
 
-const Goods = ({ id, img, title, price }: GoodsProps) => {
+const Goods = ({ id, img, title, price, profile, sellerId }: GoodsProps) => {
+    const navigate = useNavigate();
     return (
-        <Link to={`/v1/items/detail/${id}`}>
+        <Box>
             <Box>
                 <Box>
-                    <Box maxW={"25rem"}>
-                        <AspectRatio w='256px' ratio={1 / 1}>
+                    <Box
+                        maxW={"100%"}
+                        onClick={() => {
+                            navigate(`/v1/items/detail/${id}`);
+                        }}
+                        _hover={{ cursor: "pointer" }}
+                    >
+                        <AspectRatio w="23rem" ratio={1 / 1}>
                             <Image
                                 src={img}
                                 aspectRatio="1/1"
@@ -26,26 +45,43 @@ const Goods = ({ id, img, title, price }: GoodsProps) => {
                             />
                         </AspectRatio>
                     </Box>
-                    <Flex mt={"0.5rem"}>
-                        <Center>
+                </Box>
+                <Flex mt={"0.5rem"}>
+                    <Center>
+                        <Tooltip label="판매자 정보 보기">
                             <Avatar
                                 size="md"
                                 name="Ryan Florence"
-                                // src={profile}
+                                onClick={() => {
+                                    navigate(`/v1/seller/profile/${sellerId}`);
+                                }}
+                                _hover={{ cursor: "pointer" }}
+                                src={
+                                    profile === null
+                                        ? "/img/default_profile.jpeg"
+                                        : profile
+                                }
                                 mr={"1rem"}
                             />
-                        </Center>
+                        </Tooltip>
+                    </Center>
 
-                        <Box>
-                            <Box className="Text">
-                                <Box className="TextTitle">{title}</Box>
-                            </Box>
-                            <Box className="tagWrap">{price}</Box>
+                    <Box
+                        onClick={() => {
+                            navigate(`/v1/items/detail/${id}`);
+                        }}
+                        _hover={{ cursor: "pointer" }}
+                    >
+                        <Box className="Text">
+                            <Box className="TextTitle">{title}</Box>
                         </Box>
-                    </Flex>
-                </Box>
+                        <Box className="tagWrap">
+                            {price ? formatNumberWithComma(price) : ""}
+                        </Box>
+                    </Box>
+                </Flex>
             </Box>
-        </Link>
+        </Box>
     );
 };
 

@@ -83,6 +83,10 @@ export interface AddItemInterface {
     quantity: number;
 }
 
+export interface ItemWholeFetchInterface extends ItemDetailInterface {
+    sellerProfile: string;
+}
+
 export interface PutItemInterface {
     categoryId: number;
     productName: string;
@@ -115,6 +119,17 @@ export type broadcastInfo = {
     broadcastStartDate: string;
 };
 
+export type editbroadcastInfo = {
+    broadcastId: number;
+    accessToken: string;
+    broadcastTitle: string;
+    content: string;
+    script: string;
+    ttsSetting: boolean;
+    chatbotSetting: boolean;
+    broadcastStartDate: string;
+};
+
 export type followerItem = {
     id: number;
     loginId: string;
@@ -124,9 +139,9 @@ export type followerItem = {
 };
 
 export type UploadImage = {
-    file: File
-    type: string
-}
+    file: File;
+    type: string;
+};
 
 export type SellerInfo = {
     auth: string;
@@ -152,8 +167,8 @@ export type MyQna = {
     questionContent: string;
     questionRegisterDate: string;
     writerId: number;
-    writerNickname: string
-}
+    writerNickname: string;
+};
 
 export type AdminUserInfo = {
     id: number;
@@ -165,7 +180,7 @@ export type AdminUserInfo = {
     birthday: string;
     profileImg: string;
     joinDate: string;
-}
+};
 
 export interface liveProductPrice {
     productId: number;
@@ -193,12 +208,112 @@ export interface AcceptSeller {
     sellerInfoId: number;
     userId: number;
 }
-    
+
 export interface UserProfileEdit {
     profileImg: string | null | undefined;
     password: string;
     newPassword: string;
     nickname: string;
     sex: string;
-    birthday: string
+    birthday: string;
+}
+
+export interface LiveFetchInterface {
+    liveBroadcastId: number;
+    broadcastTitle: string;
+    nickName: string;
+    viewCount: null;
+    sellerId: number;
+    broadcastStatus: false;
+    startDate: string;
+}
+
+export interface LiveCalendarInterface {
+    liveProductId: number;
+    productId: number;
+    imgSrc: string;
+    sellerId: number;
+    sellerName: string;
+    sellerImg: string;
+    categoryId: number;
+    categoryName: string;
+    productName: string;
+    productContent: string;
+    paymentLink: null;
+    price: number;
+    deliveryCharge: number;
+    quantity: number;
+    liveFlatPrice: number;
+    liveRatePrice: number;
+    livePriceStartDate: string;
+    livePriceEndDate: string;
+    mainProductSetting: true;
+    registerDate: string;
+    seq: number;
+}
+
+export interface LiveCalendarShownInterface {
+    startDate: string;
+    nickName: string;
+    liveBroadcastId: number;
+    broadcastTitle: string;
+    imgSrc: string;
+    sellerImg: string;
+    categoryId: number;
+    productName: string;
+    price: number;
+    liveFlatPrice: number;
+    liveRatePrice: number;
+}
+
+export interface LiveProductAll {
+    liveProductId: number;
+    productId: number;
+    imgSrc: string;
+    sellerId: number;
+    sellerName: string;
+    sellerImg: string;
+    categoryId: number;
+    categoryName: string;
+    productName: string;
+    productContent: string;
+    paymentLink: null;
+    price: number;
+    deliveryCharge: number;
+    quantity: number;
+    liveFlatPrice: number;
+    liveRatePrice: number;
+    livePriceStartDate: string;
+    livePriceEndDate: string;
+    mainProductSetting: boolean;
+    registerDate: string;
+    seq: null;
+}
+export interface chatMessageSend extends chatMessageRecv {
+    roomId: number;
+}
+
+export interface chatMessageRecv {
+    senderId: number;
+    senderNickname: string;
+    message: string;
+}
+export interface LiveCalendarShownInterface {
+    startDate: string;
+    nickName: string;
+    liveBroadcastId: number;
+    broadcastTitle: string;
+    imgSrc: string;
+    sellerImg: string;
+    categoryId: number;
+    productName: string;
+    price: number;
+    liveFlatPrice: number;
+    liveRatePrice: number;
+}
+
+export interface chatbotMessage {
+    roomId: number;
+    message: string;
+    writer: number;
 }

@@ -16,16 +16,16 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../redux/stores/store";
 import LiveItemAdd from "../../broadcast/LiveItemAdd";
-import AddGoods from "../../broadcast/AddGoods";
+import AddGoods from "./PlanEditAddGoods";
 import {
     ItemDetailInterface,
-    broadcastInfo,
+    editbroadcastInfo,
     liveProduct,
-    liveProductPrice
+    liveProductPrice,
+    LiveProductAll
 } from "../../../types/DataTypes";
-import { editLivePlanAPI } from "../../../api/openVidu";
-import { postLiveProduct } from "../../../api/liveProduct";
-import { getLiveDetailAPI } from "../../../api/openVidu";
+import { editLivePlanAPI, getLiveDetailAPI } from "../../../api/openVidu";
+import { postLiveProduct, getLiveProduct } from "../../../api/liveProduct";
 
 interface broadcastDetailInfo {
     broadcastTitle: string;
@@ -58,21 +58,38 @@ export default function LivePlanEditForm() {
     const [planDetail, setPlanDetail] = useState<broadcastDetailInfo | null>(null);
     const [page, setPage] = useState<number>(0);
     const size = 5;
-    
+    const [ liveproducts, setLiveproducts ] = useState<LiveProductAll[]>([])
+
     const onSetSelected = (x: boolean): void => {
         setSelected(x);
     };
+
+    function addHoursToUTC(utcString: string | null): string | null {
+        if (!utcString) {
+            return null;
+        }
+        const [datePart, timePart] = utcString.split('T');
+        const [hour, minute, second] = timePart.split(':');
+        const newHour = (parseInt(hour) + 9) % 24;
+        const newTimePart = `${newHour.toString().padStart(2, '0')}:${minute}`;
+        const newUTCString = `${datePart}T${newTimePart}`;
+        return newUTCString.split('.')[0];
+    }
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await getLiveDetailAPI({ broadcastId: broadcastIdNumber }, accessToken);
+                console.log(response)
                 setPlanDetail(response);
                 setTitle(response?.broadcastTitle || "");
                 setMemo(response?.script || "");
                 setTtsSetting(response?.ttsSetting || false);
                 setFaqSetting(response?.chatbotSetting || false);
-                setStartDate(response?.broadcastStartDate || "");
+                const koreanStartDate = addHoursToUTC(response?.broadcastStartDate || "");
+                if (koreanStartDate !== null) {
+                    setStartDate(koreanStartDate);
+                }
                 setPriceEndDate(response?.broadcastEndDate || "");
             } catch (error) {
                 console.error("Error fetching live detail:", error);
@@ -80,28 +97,25 @@ export default function LivePlanEditForm() {
         };
         fetchData();
     }, [accessToken, broadcastIdNumber]);
-    
+console.log(broadcastIdNumber)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await getLiveProduct({ "live-id": broadcastIdNumber }, accessToken)
+            setLiveproducts(response.list)
+        };
+        fetchData();
+    }, [])
+    console.log(liveproducts)
+
+    useEffect(() => {
+        if (liveproducts.length > 0) {
+            setSelected(true);
+        }
+    }, [liveproducts])
+
     async function onSubmit(event: React.SyntheticEvent): Promise<void> {
         event.preventDefault();
-
-        try {
-            await editLivePlanAPI({ 
-                broadcastId: broadcastIdNumber, 
-                broadcastInfo: {
-                    accessToken,
-                    broadcastTitle: title,
-                    content: "라이브 방송",
-                    script: memo,
-                    ttsSetting,
-                    chatbotSetting: faqSetting,
-                    broadcastStartDate: startDate,
-                }
-            }, accessToken);
-            navigate("/v1/seller");
-        } catch (error) {
-            console.error("Error editing live plan:", error);
-            // 에러 처리
-        }
 
         const now_date = new Date();
         const start_date = new Date(startDate);
@@ -113,7 +127,8 @@ export default function LivePlanEditForm() {
             return;
         }
         
-        const liveReservationData: broadcastInfo = {
+        const liveEditData: editbroadcastInfo = {
+            broadcastId: broadcastIdNumber,
             accessToken,
             broadcastTitle: title,
             content: "라이브 방송",
@@ -123,6 +138,7 @@ export default function LivePlanEditForm() {
             broadcastStartDate: start_date.toISOString(),
         };
 
+        console.log(liveEditData)
         
         const liveProductArray = filterLiveProduct(
             0,
@@ -134,8 +150,8 @@ export default function LivePlanEditForm() {
             throw error;
         });
 
+        editLivePlanAPI({editbroadcastInfo: liveEditData}, accessToken)
         navigate("/v1/seller");
-        editLivePlanAPI({broadcastId: broadcastIdNumber, broadcastInfo: liveReservationData}, accessToken)
     }
 
     function filterLiveProduct(
@@ -176,7 +192,7 @@ export default function LivePlanEditForm() {
             <Container maxW={"container.xl"} p={"3rem"}>
                 <Center>
                     <Text as={"b"} fontSize={"5xl"}>
-                        라이브 등록
+                        라이브 수정
                     </Text>
                 </Center>
                 <Center p={"1rem"} display={"block"}>
@@ -244,6 +260,7 @@ export default function LivePlanEditForm() {
                                         mainProductId={mainProductId}
                                         setMainProductId={setMainProductId}
                                         setIsOpen={setIsOpen}
+                                        liveproducts={liveproducts}
                                     />
                                 </Box>
                             ) : (
@@ -259,6 +276,7 @@ export default function LivePlanEditForm() {
                                     </Button>
                                 </Center>
                             )}
+
                             <LiveItemAdd
                                 isSelected={isSelected}
                                 isSelectedState={onSetSelected}
@@ -285,7 +303,7 @@ export default function LivePlanEditForm() {
                                 placeholder="Select Date and Time"
                                 size="md"
                                 type="datetime-local"
-                                value={planDetail?.broadcastEndDate || ""}
+                                value={priceEndDate}
                                 onChange={(e) =>
                                     setPriceEndDate(e.target.value)
                                 }
@@ -301,25 +319,25 @@ export default function LivePlanEditForm() {
                             <Switch
                                 ml={"2rem"}
                                 size={"lg"}
-                                isChecked={planDetail?.chatbotSetting}
+                                isChecked={faqSetting}
                                 onChange={(e) =>
                                     setFaqSetting(e.target.checked)
                                 }
                             />
                         </Box>
-                        <Box p={"2rem"}>
+                        {/* <Box p={"2rem"}>
                             <Text fontSize={"xl"} as={"b"}>
                                 채팅을 자동으로 읽어주기 설정
                             </Text>
                             <Switch
                                 ml={"2rem"}
                                 size={"lg"}
-                                isChecked={planDetail?.ttsSetting}
+                                isChecked={ttsSetting}
                                 onChange={(e) =>
                                     setTtsSetting(e.target.checked)
                                 }
                             />
-                        </Box>
+                        </Box> */}
                     </Flex>
 
                     <Box p={"2rem"}>
