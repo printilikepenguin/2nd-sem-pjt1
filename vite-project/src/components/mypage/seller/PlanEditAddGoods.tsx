@@ -1,23 +1,7 @@
-import { TableContainer, Td } from "@chakra-ui/table";
-import {
-    Button,
-    Flex,
-    Text,
-    Table,
-    Th,
-    Thead,
-    Tbody,
-    Tr,
-    FormControl,
-    Input,
-    Switch,
-} from "@chakra-ui/react";
+import { TableContainer } from "@chakra-ui/table";
+import { Button, Flex, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import {
-    ItemDetailInterface,
-    liveProductPrice,
-    LiveProductAll,
-} from "../../../types/DataTypes";
+import { ItemDetailInterface, liveProductPrice, LiveProductAll } from "../../../types/DataTypes";
 import LiveProductTable from "./PlanEditLiveProductTable";
 
 type Typeprops = {
@@ -45,8 +29,7 @@ export default function AddGoods({
     mainProductId,
     setMainProductId,
     setIsOpen,
-    liveproducts,
-    currentGetProducts,
+    liveproducts
 }: Typeprops) {
     const [selected, setSelected] = useState<Array<ItemDetailInterface>>([]);
     useEffect(() => {
@@ -114,129 +97,20 @@ export default function AddGoods({
     }
     return (
         <TableContainer p={"0.1rem"}>
-            <Flex justifyContent={"flex-end"} mr={"0.5rem"}>
-                <Button colorScheme="teal" variant="outline" onClick={onOpen}>
-                    <Text as={"b"} fontSize={"md"}>
-                        상품 추가
-                    </Text>
-                </Button>
-            </Flex>
-            <Table variant="simple" size={"lg"}>
-                <Thead>
-                    <Tr>
-                        <Th width={"10rem"} textAlign="center">
-                            <Text as={"b"} fontSize={"xl"}>
-                                상품이름
-                            </Text>
-                        </Th>
-                        <Th width={"4rem"} textAlign="center">
-                            <Text as={"b"} fontSize={"xl"}>
-                                가격
-                            </Text>
-                        </Th>
-                        <Th width={"9rem"} textAlign="center">
-                            <Text as={"b"} fontSize={"xl"}>
-                                라이브 가격
-                            </Text>
-                        </Th>
-                        <Th width={"9rem"} textAlign="center">
-                            <Text as={"b"} fontSize={"xl"}>
-                                할인율
-                            </Text>
-                        </Th>
-                        <Th textAlign="center" width="">
-                            <Text as={"b"} fontSize={"xl"}>
-                                대표상품
-                            </Text>
-                        </Th>
-                        <Th textAlign="center">
-                            <Text as={"b"} fontSize={"xl"} textAlign="center">
-                                취소
-                            </Text>
-                        </Th>
-                    </Tr>
-                </Thead>
-
-                <Tbody>
-                    {currentGetProducts.map((product) => {
-                        const id = product.productId;
-                        return (
-                            <Tr key={product.productId}>
-                                <Td textAlign="center">
-                                    <Text
-                                        as={"b"}
-                                        fontSize={"xl"}
-                                        textAlign="center"
-                                    >
-                                        {product.productName.length > 5
-                                            ? product.productName.slice(0, 5) +
-                                              "..."
-                                            : product.productName}
-                                    </Text>
-                                </Td>
-                                <Td textAlign="center">
-                                    <Text
-                                        as={"b"}
-                                        fontSize={"xl"}
-                                        textAlign="center"
-                                    >
-                                        {product.price}
-                                    </Text>
-                                </Td>
-                                <Td textAlign="center">
-                                    <FormControl
-                                        variant="floating"
-                                        isRequired
-                                        isInvalid
-                                    >
-                                        <Input
-                                            type="number"
-                                            data-productid={product.productId}
-                                            value={
-                                                selectedProductId.get(id)?.price
-                                            }
-                                            onBlur={handlePriceBlur}
-                                            onChange={handlePriceChange}
-                                        />
-                                        {/* <FormLabel>가격 입력</FormLabel> */}
-                                    </FormControl>
-                                </Td>
-                                <Td textAlign="center">
-                                    <FormControl
-                                        variant="floating"
-                                        isRequired
-                                        isInvalid
-                                    >
-                                        <Input
-                                            type="number"
-                                            data-productid={product.productId}
-                                            value={
-                                                selectedProductId.get(id)
-                                                    ?.discount
-                                            }
-                                            onBlur={handleDiscountBlur}
-                                            onChange={handleDiscountChange}
-                                        />
-                                        {/* <FormLabel>할인율 입력</FormLabel> */}
-                                    </FormControl>
-                                </Td>
-
-                                <Td width={"1rem"} textAlign="center">
-                                    <Flex justifyContent={"right"}>
-                                        <Switch
-                                            value={id}
-                                            onChange={handleMainProduct}
-                                            isChecked={id === mainProductId}
-                                            size={"md"}
-                                        />
-                                    </Flex>
-                                </Td>
-                            </Tr>
-                        );
-                    })}
-                </Tbody>
-            </Table>
-            {/* <LiveProductTable
+            {isSelected ? (
+                <Flex justifyContent={"flex-end"} mr={"0.5rem"}>
+                    <Button
+                        colorScheme="teal"
+                        variant="outline"
+                        onClick={onOpen}
+                    >
+                        <Text as={"b"} fontSize={"md"}>
+                            상품 추가
+                        </Text>
+                    </Button>
+                </Flex>
+            ) : null}
+            <LiveProductTable
                 handleDelete={handleDelete}
                 handleMainProduct={handleMainProduct}
                 handlePriceBlur={handlePriceBlur}
@@ -247,7 +121,7 @@ export default function AddGoods({
                 mainProductId={mainProductId}
                 selectedProductId={selectedProductId}
                 liveproducts={liveproducts}
-            /> */}
+            />
         </TableContainer>
     );
 }
